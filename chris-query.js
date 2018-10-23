@@ -1,11 +1,78 @@
-// const cq = el => {
-//   var element = document.querySelectorAll(el);
-//   return {
-//     log: function() {
-//       console.log(el);
-//     }
-//   }
-// }
+const cq = el => {
+  let element = document.querySelectorAll(el);
+  let elementStyle = "";
+  return {
+    log: function() {
+      console.log(element);
+    },
+    on: function(listen, callback)
+    {
+
+      for(let i = 0; i < element.length; i++)
+      {
+        element[i].addEventListener(listen, callback);
+
+        if(!element[i].hasOwnProperty('callbacks'))
+        {
+          element[i].callbacks = {};
+        }
+        if(!element[i].callbacks.hasOwnProperty(listen))
+        {
+          element[i].callbacks[listen] = [callback];
+        }
+        else if(element[i].callbacks.hasOwnProperty(listen))
+        {
+          element[i].callbacks[listen].push(callback);
+        }
+
+      }
+      return this;
+    },
+    off: function()
+    {
+      
+      for(let i = 0; i < element.length; i++)
+      {
+        
+        if(element[i].callbacks !== undefined)
+        {
+          for(callback in element[i].callbacks)
+          {
+            for(let j = 0; j < element[i].callbacks[callback].length; j++)
+            {
+              element[i].removeEventListener(callback, element[i].callbacks[callback][j]);
+            }
+
+            //delete off js object
+            delete element[i].callbacks[callback];
+
+          }
+        }
+      }
+      return this;
+
+    },
+    addCss: function(style, value)
+    {
+      elementStyle += `${style}: ${value};`;
+
+      for(let i = 0; i < element.length; i++)
+      {
+        element[i].setAttribute("style", elementStyle);
+      }
+      return this;
+    },
+    removeCss: function(style)
+    {
+      elementStyle = elementStyle.replace(elementStyle.substring(elementStyle.indexOf(style) , elementStyle.indexOf(";", elementStyle.indexOf(style))+1), "");
+      for(let i = 0; i < element.length; i++)
+      {
+        element[i].setAttribute("style", elementStyle);
+      }
+      return this;
+    },
+  }
+}
 
 const chris = {
   element: null,
@@ -13,111 +80,40 @@ const chris = {
   style: "",
   grab: function(domElement)
         {
-          this.element = document.querySelectorAll(domElement);
+          element = document.querySelectorAll(domElement);
 
           return this;
         },
   log: function()
         {
-          console.log(this.element);
+          console.log(element);
         },
-  on: function(listen, callback)
-        {
-
-          for(let i = 0; i < this.element.length; i++)
-          {
-            this.element[i].addEventListener(listen, callback);
-
-            if(!this.element[i].hasOwnProperty('callbacks'))
-            {
-              this.element[i].callbacks = {};
-            }
-            if(!this.element[i].callbacks.hasOwnProperty(listen))
-            {
-              this.element[i].callbacks[listen] = [callback];
-            }
-            else if(this.element[i].callbacks.hasOwnProperty(listen))
-            {
-              this.element[i].callbacks[listen].push(callback);
-            }
-
-            console.log(this.element[i]);
-
-          }
-          return this;
-        },
-  off: function()
-        {
-          
-          for(let i = 0; i < this.element.length; i++)
-          {
-            
-            console.log(this.element[i]);
-            if(this.element[i].callbacks !== undefined)
-            {
-              for(callback in this.element[i].callbacks)
-              {
-                for(let j = 0; j < this.element[i].callbacks[callback].length; j++)
-                {
-                  this.element[i].removeEventListener(callback, this.element[i].callbacks[callback][j]);
-                }
-
-                //delete off js object
-                delete this.element[i].callbacks[callback];
-
-              }
-            }
-          }
 
 
-          return this;
 
-        },
-  addCss: function(style, value)
-        {
-          this.style += `${style}: ${value};`;
 
-          for(let i = 0; i < this.element.length; i++)
-          {
-            this.element[i].setAttribute("style", this.style);
-          }
-          return this;
-        },
-  removeCss: function(style)
-        {
-          this.style = this.style.replace(this.style.substring(this.style.indexOf(style) , this.style.indexOf(";", this.style.indexOf(style))+1), "");
-          console.log(this.style);
-          for(let i = 0; i < this.element.length; i++)
-          {
-            this.element[i].setAttribute("style", this.style);
-          }
-          return this;
-        },
     append: function(element)
         {
 
         }
 };
 
-chris.grab("#change-").off("click")
+cq("#change-").off("click")
 
-chris.grab("button").log();
 
-chris.grab(".chris").addCss('height', '100px').addCss('background', 'red').addCss("border" , "12px black solid").removeCss("background");
+cq(".chris").addCss('height', '100px').addCss('background', 'red').addCss("border" , "12px black solid").removeCss("background");
 
-chris.grab("#change-on").on("click", function()
+cq("#change-on").on("click", function()
 {
-  chris.grab("#test").on("click", function()
+  cq("#test").on("click", function()
   {
     alert("hi");
   })
-  chris.grab("#test").on("mouseover", function()
-  {
-    alert("heri");
-  })
+
 });
 
-chris.grab("#change-off").on("click", function()
+cq("#change-off").on("click", function()
 {
-  chris.grab("#test").off("click")
+  cq("#test").off("click")
 });
+
