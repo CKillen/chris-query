@@ -15,7 +15,6 @@ const chris = {
         {
           this.element = document.querySelectorAll(domElement);
 
-
           return this;
         },
   log: function()
@@ -42,29 +41,37 @@ const chris = {
               this.element[i].callbacks[listen].push(callback);
             }
 
-            //this.element[i].callbacks = {[listen]: [callback]};
+            console.log(this.element[i]);
+
           }
           return this;
         },
-  off: function(listen, callback)
+  off: function()
         {
+          
           for(let i = 0; i < this.element.length; i++)
           {
-
-            if(this.element[i].callbacks[listen] !== undefined)
+            
+            console.log(this.element[i]);
+            if(this.element[i].callbacks !== undefined)
             {
-              for(callback in this.element[i].callbacks[listen])
+              for(callback in this.element[i].callbacks)
               {
-                this.element[i].removeEventListener(listen, this.element[i].callbacks[listen][callback]);
+                for(let j = 0; j < this.element[i].callbacks[callback].length; j++)
+                {
+                  this.element[i].removeEventListener(callback, this.element[i].callbacks[callback][j]);
+                }
+
+                //delete off js object
+                delete this.element[i].callbacks[callback];
+
               }
-            }
-            else {
-              this.element[i].removeEventListener(listen, callback);
             }
           }
 
 
           return this;
+
         },
   addCss: function(style, value)
         {
@@ -85,10 +92,14 @@ const chris = {
             this.element[i].setAttribute("style", this.style);
           }
           return this;
+        },
+    append: function(element)
+        {
+
         }
 };
 
-
+chris.grab("#change-").off("click")
 
 chris.grab("button").log();
 
@@ -100,7 +111,10 @@ chris.grab("#change-on").on("click", function()
   {
     alert("hi");
   })
-
+  chris.grab("#test").on("mouseover", function()
+  {
+    alert("heri");
+  })
 });
 
 chris.grab("#change-off").on("click", function()
