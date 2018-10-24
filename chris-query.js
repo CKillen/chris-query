@@ -1,7 +1,14 @@
+//Dont forget you can get the original call with el
+
+
 const cq = el => {
   let element = null;
-
-  if(el.includes("<") && el.includes(">"))
+  if(typeof el === "object")
+  {
+    //for now assume that getting a html object from this
+    element = document.querySelectorAll("#"+el.id);
+  }
+  else if(el.includes("<") && el.includes(">"))
   {
     //create a nodelist like elmenet for new div
     element = Object.create(NodeList, {
@@ -10,7 +17,7 @@ const cq = el => {
       'item': {
           "value": function (i) {
               return this[+i || 0];
-          }, 
+          },
           enumerable: true
       }
     });
@@ -19,7 +26,7 @@ const cq = el => {
   else
   {
     element = document.querySelectorAll(el);
-    
+
   }
 
   let elementClass = "";
@@ -54,10 +61,10 @@ const cq = el => {
     },
     off: function()
     {
-      
+
       for(let i = 0; i < element.length; i++)
       {
-        
+
         if(element[i].callbacks !== undefined)
         {
           for(callback in element[i].callbacks)
@@ -80,7 +87,7 @@ const cq = el => {
     {
       elementStyle += `${style}: ${value};`;
 
-      
+
       for(let i = 0; i < element.length; i++)
       {
         element[i].setAttribute("style", elementStyle);
@@ -107,32 +114,43 @@ const cq = el => {
 
       return this;
     },
+    addInnerHTML: function(html)
+    {
+      //this is just a quick function to fix for my homework
+      element[element.length -1].innerHTML = html;
+
+      return this;
+    },
     text: function(text)
     {
-      
-      for(let i = 0; i < element.length; i++)
-      {
-        let textNode = document.createTextNode(text);
-        element[i].appendChild(textNode);
-      }
-      return this; 
-    },
-    addClass: function(addClass)
-    {
-      elementClass += " " + addClass;
 
       for(let i = 0; i < element.length; i++)
       {
-        element[i].className = elementClass;
+        let textNode = document.createTextNode(text);
+        for(let j = 0; j < element[i].childNodes.length; j++)
+        {
+            element[i].childNodes[j].remove();
+        }
+        element[i].appendChild(textNode);
+      }
+      return this;
+    },
+    addClass: function(addClass)
+    {
+
+      for(let i = 0; i < element.length; i++)
+      {
+        element[i].className += " " + addClass;
       }
       return this;
     },
     removeClass: function(removeClass)
     {
-      elementClass = elementClass.replace(removeClass, "");
+
+
       for(let i = 0; i < element.length; i++)
       {
-        element[i].className = elementClass;
+        element[i].className = element[i].className.replace(removeClass, "");
       }
       return this;
     },
@@ -142,7 +160,7 @@ const cq = el => {
       {
         element[i].innerHTML = "";
       }
-      return this; 
+      return this;
     },
     html: function()
     {
@@ -150,7 +168,8 @@ const cq = el => {
       {
         elementHtmlList.push(element[i].innerHTML);
       }
-      console.log(elementHtmlList);
+
+      return elementHtmlList;
     },
     getElements: function()
     {
@@ -159,29 +178,13 @@ const cq = el => {
       for(let i = 0; i < element.length; i++)
       {
         elementList.push(element[i]);
-      } 
+      }
 
       return elementList;
+    },
+    find: function(selector)
+    {
+      return document.querySelectorAll(el + " " + selector);
     }
   }
 }
-
-
-cq(".chris").addCss('height', '100px').addCss('background', 'red').addCss("border" , "12px black solid").removeCss("background");
-
-cq("#change-on").on("click", function()
-{
-  cq("#test").on("click", function()
-  {
-    alert("hi");
-  })
-
-});
-
-cq("#change-off").on("click", function()
-{
-  cq("#test").off("click")
-});
-
-cq(".chris").addClass("test").addClass("true");
-
